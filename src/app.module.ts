@@ -2,9 +2,12 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { MediaSearchEngineService } from './media-search-engine/media-search-engine.service';
-import { MediaController } from './media/media.controller';
-import { MediaService } from './media/media.service';
+import { MovieModule } from './movie/movie.module';
+import { MovieService } from './movie/movie.service';
+import { SerieModule } from './serie/serie.module';
+import { SerieService } from './serie/serie.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -18,8 +21,10 @@ import { MediaService } from './media/media.service';
         },
       },
     ]),
+    MovieModule,
+    SerieModule,
   ],
-  providers: [MediaSearchEngineService, MediaService],
-  controllers: [MediaController],
+  providers: [ AppService, MovieService, SerieService],
+  controllers: [ AppController],
 })
 export class AppModule {}
