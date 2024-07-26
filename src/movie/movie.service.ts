@@ -42,7 +42,6 @@ export class MovieService {
             return { moviesList: movieList };
 
         } catch (error) {
-            console.error('Error al obtener los datos:', error);
             throw(error);
         }
     }

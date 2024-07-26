@@ -49,7 +49,6 @@ export class SerieService {
     
             return { seriesList };
         } catch (error) {
-            console.error('Error in searchSerieByName:', error);
             throw error; 
         }
     }
