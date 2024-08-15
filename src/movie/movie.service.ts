@@ -43,7 +43,7 @@ export class MovieService {
 
             return { movie: movie };
         } catch (error) {
-            throw new RpcException({ code: status.INTERNAL, message: `Error getting mediaId = ${mediaId} :` + error.message });
+            throw new RpcException({ code: status.INTERNAL, message: error.message });
         }
 
     }
@@ -82,7 +82,7 @@ export class MovieService {
             return { moviesList: movieList };
 
         } catch (error) {
-            throw (error);
+            throw new RpcException({ code: status.INTERNAL, message: error.message });
         }
     }
 }

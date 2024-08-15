@@ -21,7 +21,7 @@ export class AppController implements MediaSearchEngineController {
     if (request.mediaType === "MOVIE") {
       return this.movieService.getMovieById(request.mediaId);
     }
-    throw new RpcException({ code: status.INTERNAL, message: `Error getting media by Id: MediaType '${request.mediaType}' doesnt exist` });
+    throw new RpcException({ code: status.INTERNAL, message: `MediaType '${request.mediaType}' doesnt exist` });
   }
   @GrpcMethod('MediaSearchEngine', 'SearchMovieByName')
   searchMovieByName(request: SearchMovieByNameRequest): Promise<SearchMovieByNameResponse> | Observable<SearchMovieByNameResponse> | SearchMovieByNameResponse {

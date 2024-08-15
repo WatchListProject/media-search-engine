@@ -42,7 +42,7 @@ export class SerieService {
             }
         } 
         catch (error) {
-            throw new RpcException({ code: status.INTERNAL, message: `Error getting mediaId = ${mediaId} :`+ error.message });
+            throw new RpcException({ code: status.INTERNAL, message:  error.message });
         }
 
 
@@ -91,7 +91,7 @@ export class SerieService {
 
             return { seriesList };
         } catch (error) {
-            throw error;
+            throw new RpcException({ code: status.INTERNAL, message: error.message });
         }
     }
 
