@@ -1,7 +1,6 @@
 import { status } from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
-import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { request } from 'http';
+import { RpcException } from '@nestjs/microservices';
 import { Serie, SearchSerieByNameRequest, SearchSerieByNameResponse, GetMediaByIdResponse } from 'src/media_search_engine.pb';
 
 @Injectable()
