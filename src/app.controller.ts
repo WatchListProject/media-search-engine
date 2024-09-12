@@ -1,5 +1,4 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
 import { GetMediaByIdRequest, GetMediaByIdResponse, MediaSearchEngineController, SearchMovieByNameRequest, SearchMovieByNameResponse, SearchSerieByNameRequest, SearchSerieByNameResponse } from './media_search_engine.pb';
 import { Observable } from 'rxjs';
 import { SerieService } from './serie/serie.service';
@@ -9,7 +8,7 @@ import { status } from '@grpc/grpc-js';
 
 @Controller()
 export class AppController implements MediaSearchEngineController {
-  constructor(private readonly appService: AppService, private readonly serieService: SerieService, private readonly movieService: MovieService) { }
+  constructor( private readonly serieService: SerieService, private readonly movieService: MovieService) { }
   @GrpcMethod('MediaSearchEngine', 'GetMediaById')
   getMediaById(request: GetMediaByIdRequest): Promise<GetMediaByIdResponse> {
     // Serie

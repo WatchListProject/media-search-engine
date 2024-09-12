@@ -7,7 +7,6 @@ import { MovieService } from './movie/movie.service';
 import { SerieModule } from './serie/serie.module';
 import { SerieService } from './serie/serie.service';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -24,7 +23,7 @@ import { AppService } from './app.service';
     MovieModule,
     SerieModule,
   ],
-  providers: [ AppService, MovieService, SerieService],
+  providers: [MovieService, SerieService],
   controllers: [ AppController],
 })
 export class AppModule {}

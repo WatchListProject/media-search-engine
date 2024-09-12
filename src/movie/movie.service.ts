@@ -30,7 +30,6 @@ export class MovieService {
                 throw new RpcException({ code: status.INVALID_ARGUMENT, message: `not found` });
             }
 
-            console.log(data);
             const movie: Movie = {
                 id: data.id,
                 title: data.title,
@@ -53,7 +52,6 @@ export class MovieService {
 
         // Build URL
         const moviesApiURL = `${this.MOVIES_BASE_URL}/search/movie?sort_by=popularity.desc&query=${request.name}&include_adult=true&language=en-US&page=1`;
-        console.log(moviesApiURL);
         try {
 
             const requestConfig = {

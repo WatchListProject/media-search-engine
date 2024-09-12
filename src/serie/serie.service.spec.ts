@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SerieService } from './serie.service';
+import { RpcException } from '@nestjs/microservices';
 
 // Mock HTTP Response
 class MockResponse {
@@ -177,7 +178,7 @@ describe('SerieService', () => {
 
   });
 
-  it('should throw an error when the external details API response status is not OK', async () => {
+  it('should throw an error if the response is not Ok in getSerieById while searching series by name', async () => {
     // mock the external search API response
     const mockSearchResponse = {
       tv_shows: [
@@ -201,6 +202,7 @@ describe('SerieService', () => {
     await expect(service.searchSerieByName({ name: 'Alien' })).rejects.toThrow(`Error fetching details for series ID ${mockSearchResponse.tv_shows[0].id}: Details API Error`);
 
   });
+
 
   it('should return a series with no poster and no backdrop path', async () => {
     // Mocked HTTP Response from the external API
@@ -257,6 +259,65 @@ describe('SerieService', () => {
       ],
     });
   });
+
+  it('should throw an error if the response is not Ok in getSerieById', async () => {
+
+    (global as any).fetch.mockResolvedValue(new MockResponse({}, false, "Status Not OK: External API Error"));
+
+    await expect(service.getSerieById('123')).rejects.toThrow("Details response API Failed");
+  });
+
+  it('should throw an error if no series are found in getSerieById', async () => {
+    const mockDetailsResponse = { tvShow: [] };
+
+    (global as any).fetch.mockResolvedValue(new MockResponse(mockDetailsResponse, true, "Status OK"));
+
+    await expect(service.getSerieById('123')).rejects.toThrow('not found');
+  });
+
+
+  it('getSerieById should return a series with no poster and no backdrop path', async () => {
+    // Mocked HTTP Response from the external API
+    const mockDetailsResponse = {
+      tvShow: {
+        id: 111,
+        name: "Serie 1",
+        description: "Serie 1 description.",
+        start_date: "1979-05-20",
+        end_date: null,
+        runtime: 50,
+        episodes: [1, 2, 3],
+        image_path: null,
+        pictures: [],
+        rating: 8,
+        rating_count: 4000
+      }
+    };
+
+    // Configure mock 
+    (global as any).fetch.mockResolvedValue(new MockResponse(mockDetailsResponse, true, "Status OK"));
+
+    // Call service method
+    const result = await service.getSerieById('123');
+
+    // Verify result
+    expect(result).toEqual({
+      serie:
+      {
+        id: "111",
+        title: "Serie 1",
+        overview: "Serie 1 description.",
+        startDate: "1979-05-20",
+        endDate: null,
+        runTime: 50,
+        numberOfEpisodes: 3,
+        posterPath: null,
+        backdropPath: null,
+        popularity: 32000
+      },
+    });
+  });
+
 
   afterEach(() => {
     jest.resetAllMocks();

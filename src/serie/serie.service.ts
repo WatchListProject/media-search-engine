@@ -15,11 +15,11 @@ export class SerieService {
             
             
             if (!detailsResponse.ok) {
-                throw new RpcException({ code: status.INVALID_ARGUMENT, message: detailsResponse });
+                throw new RpcException({ code: status.INVALID_ARGUMENT, message: "Details response API Failed" });
             }
 
             const detailsData = await detailsResponse.json();
-            if (detailsData.tvShow.length == 0) {
+            if (detailsData.tvShow.length === 0) {
                 throw new RpcException({ code: status.INVALID_ARGUMENT, message: `not found` });
             }
 
