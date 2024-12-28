@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SerieService } from './serie.service';
 import { RpcException } from '@nestjs/microservices';
 
-// Mock HTTP Response
 class MockResponse {
   private data: any;
   public ok: boolean;
