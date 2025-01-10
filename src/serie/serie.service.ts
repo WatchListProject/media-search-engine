@@ -2,17 +2,14 @@ import { status } from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { Serie, SearchSerieByNameRequest, SearchSerieByNameResponse, GetMediaByIdResponse } from 'src/media_search_engine.pb';
-import { format } from 'date-fns';  
+import { formatDate } from '../utils/dateFormater';
 
 @Injectable()
 export class SerieService {
 
     private readonly SERIES_BASE_URL = process.env.SERIES_BASE_URL;
 
-    private formatDate(dateString: string): string {
-        const date = new Date(dateString);
-        return format(date, 'dd/MM/yyyy HH:mm');
-    }
+
 
     async getSerieById(mediaId: string): Promise<GetMediaByIdResponse> {
         try {
@@ -32,8 +29,8 @@ export class SerieService {
                 id: detailsData.tvShow.id.toString(),
                 title: detailsData.tvShow.name,
                 overview: detailsData.tvShow.description,
-                startDate: this.formatDate(detailsData.tvShow.start_date), 
-                endDate: detailsData.tvShow.end_date ? this.formatDate(detailsData.tvShow.end_date) : null, 
+                startDate: formatDate(detailsData.tvShow.start_date), 
+                endDate: detailsData.tvShow.end_date ? formatDate(detailsData.tvShow.end_date) : null, 
                 runTime: detailsData.tvShow.runtime,
                 numberOfEpisodes: detailsData.tvShow.episodes.length,
                 posterPath: detailsData.tvShow.image_path || null,
@@ -73,8 +70,8 @@ export class SerieService {
                     id: detailsData.tvShow.id.toString(),
                     title: detailsData.tvShow.name,
                     overview: detailsData.tvShow.description,
-                    startDate: this.formatDate(detailsData.tvShow.start_date),  
-                    endDate: detailsData.tvShow.end_date ? this.formatDate(detailsData.tvShow.end_date) : null,  
+                    startDate: formatDate(detailsData.tvShow.start_date),  
+                    endDate: detailsData.tvShow.end_date ? formatDate(detailsData.tvShow.end_date) : null,  
                     runTime: detailsData.tvShow.runtime,
                     numberOfEpisodes: detailsData.tvShow.episodes.length,
                     posterPath: detailsData.tvShow.image_path || null,
