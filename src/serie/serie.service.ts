@@ -2,17 +2,22 @@ import { status } from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { Serie, SearchSerieByNameRequest, SearchSerieByNameResponse, GetMediaByIdResponse } from 'src/media_search_engine.pb';
+import { format } from 'date-fns';  
 
 @Injectable()
 export class SerieService {
 
     private readonly SERIES_BASE_URL = process.env.SERIES_BASE_URL;
 
+    private formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        return format(date, 'dd/MM/yyyy HH:mm');
+    }
+
     async getSerieById(mediaId: string): Promise<GetMediaByIdResponse> {
         try {
             const seriesDetailsApiURL = `${this.SERIES_BASE_URL}/show-details?q=${mediaId}`;
             const detailsResponse = await fetch(seriesDetailsApiURL);
-            
             
             if (!detailsResponse.ok) {
                 throw new RpcException({ code: status.INVALID_ARGUMENT, message: "Details response API Failed" });
@@ -27,15 +32,15 @@ export class SerieService {
                 id: detailsData.tvShow.id.toString(),
                 title: detailsData.tvShow.name,
                 overview: detailsData.tvShow.description,
-                startDate: detailsData.tvShow.start_date,
-                endDate: detailsData.tvShow.end_date,
+                startDate: this.formatDate(detailsData.tvShow.start_date), 
+                endDate: detailsData.tvShow.end_date ? this.formatDate(detailsData.tvShow.end_date) : null, 
                 runTime: detailsData.tvShow.runtime,
                 numberOfEpisodes: detailsData.tvShow.episodes.length,
                 posterPath: detailsData.tvShow.image_path || null,
                 backdropPath: detailsData.tvShow.pictures[0] || null,
                 popularity: detailsData.tvShow.rating * detailsData.tvShow.rating_count
             }
-            
+
             return {
                 serie: serie
             }
@@ -43,13 +48,10 @@ export class SerieService {
         catch (error) {
             throw new RpcException({ code: status.INTERNAL, message:  error.message });
         }
-
-
     }
 
     async searchSerieByName(request: SearchSerieByNameRequest): Promise<SearchSerieByNameResponse> {
         try {
-            // build search URL
             const seriesSearchApiURL = `${this.SERIES_BASE_URL}/search?q=${request.name}&page=1`;
 
             const searchResponse = await fetch(seriesSearchApiURL);
@@ -60,7 +62,6 @@ export class SerieService {
             const searchData = await searchResponse.json();
             const seriesIdList: number[] = searchData.tv_shows.map(serie => serie.id);
 
-            // fetch series in paralel
             const seriesDetailsPromises = seriesIdList.map(async (id) => {
                 const seriesDetailsApiURL = `${this.SERIES_BASE_URL}/show-details?q=${id}`;
                 const detailsResponse = await fetch(seriesDetailsApiURL);
@@ -72,8 +73,8 @@ export class SerieService {
                     id: detailsData.tvShow.id.toString(),
                     title: detailsData.tvShow.name,
                     overview: detailsData.tvShow.description,
-                    startDate: detailsData.tvShow.start_date,
-                    endDate: detailsData.tvShow.end_date,
+                    startDate: this.formatDate(detailsData.tvShow.start_date),  
+                    endDate: detailsData.tvShow.end_date ? this.formatDate(detailsData.tvShow.end_date) : null,  
                     runTime: detailsData.tvShow.runtime,
                     numberOfEpisodes: detailsData.tvShow.episodes.length,
                     posterPath: detailsData.tvShow.image_path || null,
@@ -82,10 +83,8 @@ export class SerieService {
                 } as Serie;
             });
 
-            // wait for every promise
             const seriesList = await Promise.all(seriesDetailsPromises);
 
-            // order by popularity
             seriesList.sort((a, b) => b.popularity - a.popularity);
 
             return { seriesList };
@@ -93,6 +92,4 @@ export class SerieService {
             throw new RpcException({ code: status.INTERNAL, message: error.message });
         }
     }
-
-
 }
